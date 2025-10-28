@@ -1,0 +1,64 @@
+version: '3.9'
+
+services:
+  postgres:
+      image: postgres:15
+      container_name: mortgage-db
+      restart: always
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: mortgage_decisioning
+      ports:
+        - "5432:5432"
+      volumes:
+        - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  borrowers-helper-service:
+    build:
+      context: ./services/borrowers-helper-service
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME=borrowers-helper-service
+    depends_on:
+      - postgres
+    ports:
+      - "8001:8000"
+
+  decision-coordinator-service:
+    build:
+      context: ./services/decision-coordinator-service
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME=decision-coordinator-service
+    depends_on:
+      - postgres
+    ports:
+      - "8002:8000"
+
+  # ml-engine:
+  #   build: ./services/ml-decisioning-engine
+  #   ports:
+  #     - "8003:8000"
+
+  # rule-engine:
+  #   build: ./services/rule-engine-service
+  #   ports:
+  #     - "8004:8000"
+
+  # fairness-auditor:
+  #   build: ./services/fairness-auditor-service
+  #   ports:
+  #     - "8005:8000"
+
+  # explanation-service:
+  #   build: ./services/explanation-service
+  #   ports:
+  #     - "8006:8000"
+
+  # shadow-model-trainer:
+  #   build: ./services/shadow-model-trainer
+  #   ports:
+  #     - "8007:8000"

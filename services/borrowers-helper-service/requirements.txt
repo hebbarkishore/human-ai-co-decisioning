@@ -1,0 +1,12 @@
+fastapi # Main web framework used to build APIs
+uvicorn # ASGI server to run FastAPI apps (like a lightweight version of Gunicorn for async)
+psycopg2-binary # PostgreSQL driver used to connect and query Postgres databases
+bcrypt # For hashing passwords securely
+python-dotenv # To load .env files for environment variables
+pydantic[email] # For data validation and serialization (used via BaseModel classes)
+python-multipart
+PyMuPDF
+python-docx
+pillow
+pytesseract
+httpx
