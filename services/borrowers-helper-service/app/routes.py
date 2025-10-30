@@ -1,7 +1,6 @@
 from fastapi import UploadFile, File, APIRouter, HTTPException
-from services.user_service import save_user_document
 from models import UserCreate, UserRead
-from services.user_service import get_users_by_role, get_user_by_id, create_user, save_user_document
+from services.user_service import get_users_by_role, get_user_by_id, create_user, verify_user_eligibility
 
 router = APIRouter()
 
@@ -17,6 +16,6 @@ def get_user(role: str, user_id: str):
 def add_user(role: str, user: UserCreate):
     return create_user(user, role)
 
-@router.post("/borrower/{user_email}/upload-docs")
-async def upload_document(user_email: str, file: UploadFile = File(...)):
-    return await save_user_document(user_email, file)
+@router.post("/borrower/{user_email}/check-eligibility")
+def check_eligibility(user_email: str, file: UploadFile = File(...)):
+    return verify_user_eligibility(user_email, file)

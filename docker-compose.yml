@@ -37,16 +37,43 @@ services:
       - postgres
     ports:
       - "8002:8000"
+  
+  rule-engine-service:
+    build:
+      context: ./services/rule-engine-service
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME=rule-engine-service
+    depends_on:
+      - postgres
+    ports:
+      - "8003:8000"
 
-  # ml-engine:
-  #   build: ./services/ml-decisioning-engine
-  #   ports:
-  #     - "8003:8000"
+  ml-decision-service:
+    build:
+      context: ./services/ml-decision-service
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME=ml-decision-service
+    depends_on:
+      - postgres
+    ports:
+      - "8004:8000"  
+  
+  fairness-auditor-service:
+    build:
+      context: ./services/fairness-auditor-service
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME=fairness-auditor-service
+    depends_on:
+      - postgres
+    ports:
+      - "8005:8000"      
 
-  # rule-engine:
-  #   build: ./services/rule-engine-service
-  #   ports:
-  #     - "8004:8000"
 
   # fairness-auditor:
   #   build: ./services/fairness-auditor-service

@@ -1,0 +1,43 @@
+# Byte-compiled / optimized / compiled files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Editor/IDE specific files
+.idea/  # IntelliJ IDEA / PyCharm
+.vscode/ # VS Code
+*.swp # Vim swap files
+*~ # Emacs backup files
+
+# Operating System files
+.DS_Store # macOS
+Thumbs.db # Windows
+desktop.ini # Windows
+
+# Test and coverage files
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# Distribution / build files
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Jupyter Notebook specific files
+.ipynb_checkpoints/
+
+# Miscellaneous
+.env # Environment variables

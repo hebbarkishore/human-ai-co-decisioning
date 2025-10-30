@@ -12,6 +12,7 @@ import fitz  # PyMuPDF
 from PIL import Image
 import pytesseract
 import httpx
+from logger import logger
 
 DECISION_COORDINATOR_URL = os.getenv("DECISION_COORDINATOR_URL", "http://decision-coordinator-service:8000")
 
@@ -87,8 +88,8 @@ def extract_metadata_from_file_bytes(filename: str, file_bytes: bytes) -> dict:
 
     return metadata or {"note": "No metadata extracted"}
 
-# ⬇️ Main method
-async def save_user_document(email: str, file: UploadFile):
+
+def verify_user_eligibility(email: str, file: UploadFile):
     document_name = os.path.splitext(file.filename)[0]
     document_type = os.path.splitext(file.filename)[1][1:]
 
@@ -102,39 +103,81 @@ async def save_user_document(email: str, file: UploadFile):
         raise HTTPException(status_code=404, detail="Borrower with provided email not found.")
     user_id = user_row[0]
 
-    # Step 2: Read file and extract metadata
-    contents = await file.read()
+    logger.info("Checking eligibility for user_id: %s, document: %s", user_id, document_name)
+
+    # Step 2: Get latest decision
+    cur.execute("""
+        SELECT final_decision FROM decision_log
+        WHERE borrower_id = %s
+        ORDER BY created_at DESC
+        LIMIT 1
+    """, (user_id,))
+    decision_row = cur.fetchone()
+    latest_decision = decision_row[0] if decision_row else None
+
+    logger.info("Latest decision for user_id %s: %s", user_id, latest_decision)
+
+    # Step 3: If approved, exit early
+    if latest_decision == "approved":
+        cur.close()
+        conn.close()
+        return {"status": "approved", "message": "Loan already approved."}
+    
+    logger.info("Proceeding to document submission for user_id %s", user_id)
+
+    # Step 4: Check if document already exists
+    cur.execute("""
+        SELECT id FROM documents
+        WHERE user_id = %s AND document_name = %s AND document_type = %s
+    """, (user_id, document_name, document_type))
+    doc_exists = cur.fetchone()
+
+    logger.info("Document exists check for user_id %s, latest_decision %s, document %s: %s", user_id, latest_decision, document_name, bool(doc_exists))
+
+    if doc_exists:
+        if latest_decision == "rejected":
+            cur.close()
+            conn.close()
+            return {"status": "rejected", "message": "Application rejected. No more documents accepted."}
+        return {"status": latest_decision or "unknown", "message": "Document already submitted."}
+
+    if latest_decision and latest_decision != "request_evidence":
+        cur.close()
+        conn.close()
+        return {"status": latest_decision, "message": f"Cannot accept documents. Last decision: {latest_decision}"}
+
+    # Step 5: Read and extract metadata
+    contents = file.file.read()
     metadata = extract_metadata_from_file_bytes(file.filename, contents)
 
-    # Step 3: Save to DB
+    # Step 6: Insert document
     cur.execute("""
         INSERT INTO documents (user_id, document_name, document_content, document_type, parsed_data)
         VALUES (%s, %s, %s, %s, %s)
         RETURNING id
     """, (user_id, document_name, contents, document_type, json.dumps(metadata)))
-    
     doc_id = cur.fetchone()[0]
     conn.commit()
     cur.close()
     conn.close()
 
-    # Step 4: Notify decision-coordinator-service
-    notify_response = await notify_decision_coordinator(user_id, doc_id)
+    # Step 7: Notify coordinator
+    notify_response = call_decision_coordinator(user_id, doc_id)
+    logger.info("decision coordinator for user_id %s, document_id %s, response %s", user_id, doc_id, notify_response)
 
-    return {"message": "Document uploaded successfully", "document_id": doc_id}
+    return {"message": notify_response, "document_id": doc_id}
 
 
-async def notify_decision_coordinator(user_id: str, document_id: str):
+def call_decision_coordinator(user_id: str, document_id: str):
     payload = {
         "user_id": user_id,
         "document_id": document_id
     }
 
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(f"{DECISION_COORDINATOR_URL}/process-decision", json=payload)
-            response.raise_for_status()
-            return response.json()
+        response = httpx.post(f"{DECISION_COORDINATOR_URL}/process-decision", json=payload)
+        response.raise_for_status()
+        return response.json()
     except httpx.RequestError as exc:
-        print(f"❌ Error contacting decision-coordinator-service: {exc}")
+        logger.error(f"❌ Error contacting decision-coordinator-service: {exc}")
         return {"error": "Coordinator not reachable"}
