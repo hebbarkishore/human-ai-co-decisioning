@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from models import MLRequest, MLResult
 from ml_evaluator import evaluate_ml_decision
 

@@ -15,8 +15,9 @@ import httpx
 from logger import logger
 
 DECISION_COORDINATOR_URL = os.getenv("DECISION_COORDINATOR_URL", "http://decision-coordinator-service:8000")
+role = "borrower"
 
-def get_users_by_role(role: str):
+def get_users():
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("SELECT id, full_name, email, role FROM users WHERE role = %s", (role,))
@@ -25,7 +26,7 @@ def get_users_by_role(role: str):
     conn.close()
     return [UserRead(id=u[0], full_name=u[1], email=u[2], role=u[3]) for u in users]
 
-def get_user_by_id(user_id: str, role: str):
+def get_user_by_id(user_id: str):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("SELECT id, full_name, email, role FROM users WHERE id = %s AND role = %s", (user_id, role))
@@ -36,7 +37,7 @@ def get_user_by_id(user_id: str, role: str):
         raise Exception("User not found")
     return UserRead(id=u[0], full_name=u[1], email=u[2], role=u[3])
 
-def create_user(user: UserCreate, role: str):
+def create_user(user: UserCreate):
     import bcrypt
     hashed = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt()).decode()
     conn = get_connection()
@@ -165,7 +166,7 @@ def verify_user_eligibility(email: str, file: UploadFile):
     notify_response = call_decision_coordinator(user_id, doc_id)
     logger.info("decision coordinator for user_id %s, document_id %s, response %s", user_id, doc_id, notify_response)
 
-    return {"message": notify_response, "document_id": doc_id}
+    return {"message": notify_response, "document_id": doc_id, "user_id": user_id}
 
 
 def call_decision_coordinator(user_id: str, document_id: str):
@@ -179,5 +180,5 @@ def call_decision_coordinator(user_id: str, document_id: str):
         response.raise_for_status()
         return response.json()
     except httpx.RequestError as exc:
-        logger.error(f"❌ Error contacting decision-coordinator-service: {exc}")
+        logger.error(f"Error contacting decision-coordinator-service: {exc}")
         return {"error": "Coordinator not reachable"}

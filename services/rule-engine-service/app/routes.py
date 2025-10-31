@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from models import RuleRequest, RuleResult
-from services.rule_evaluator import evaluate_rules
+from rule_evaluator import evaluate_rules
 
 router = APIRouter()
 

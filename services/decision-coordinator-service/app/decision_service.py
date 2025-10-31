@@ -1,10 +1,8 @@
 from logger import logger
 import os
 import json
-import logging
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FuturesTimeoutError
-
 import httpx
 from db import get_connection  # your DB helper that returns psycopg2 connection
 
@@ -52,7 +50,7 @@ def call_fairness_auditor(user_id: str, ml_result_id: str) -> dict:
     try:
         with httpx.Client(timeout=CALL_TIMEOUT_SECONDS) as client:
             resp = client.post(
-                f"{FIARNESS_AUDITOR_SERVICE_URL}/fairness-auditor",
+                f"{FIARNESS_AUDITOR_SERVICE_URL}/bias-check",
                 json={"user_id": user_id, "ml_result_id": ml_result_id},
                 timeout=CALL_TIMEOUT_SECONDS
             )
@@ -125,8 +123,9 @@ def _handle_both_results_and_persist(user_id: str, document_id: str, rule_result
             final = "pending_conflict"
 
     explanation = json.dumps({"rule": rule_result, "ml": ml_result})
+    logger.info("explanation: %s", explanation)
     _insert_decision(user_id, document_id, final, explanation, rule_result_id, ml_result_id, audit_result_id)
-    return {"final_decision": final, "explanation": explanation}
+    return {"final_decision": final}
 
 def handle_decision_request(user_id: str, document_id: str):
     """
@@ -185,4 +184,4 @@ def handle_decision_request(user_id: str, document_id: str):
             logger.exception("Unexpected exception in handle_decision_request: %s", e)
             _insert_decision(user_id, document_id, final_decision="error",
                              explanation=f"server error: {str(e)}")
-            return {"status": "error", "reason": "exception", "detail": str(e)}            
+            return {"status": "error", "reason": "exception", "detail": str(e)}       

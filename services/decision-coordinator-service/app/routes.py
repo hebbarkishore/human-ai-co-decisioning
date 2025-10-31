@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 import asyncio
 from models import DecisionRequest
-from services.decision_service import handle_decision_request
+from decision_service import handle_decision_request
 from logger import logger
 
 router = APIRouter()

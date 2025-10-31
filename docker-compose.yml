@@ -74,16 +74,17 @@ services:
     ports:
       - "8005:8000"      
 
-
-  # fairness-auditor:
-  #   build: ./services/fairness-auditor-service
-  #   ports:
-  #     - "8005:8000"
-
-  # explanation-service:
-  #   build: ./services/explanation-service
-  #   ports:
-  #     - "8006:8000"
+  underwriter-helper-service:
+    build:
+      context: ./services/underwriter-helper-service
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME=underwriter-helper-service
+    depends_on:
+      - postgres
+    ports:
+      - "8006:8000"  
 
   # shadow-model-trainer:
   #   build: ./services/shadow-model-trainer
