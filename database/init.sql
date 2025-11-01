@@ -76,7 +76,28 @@ CREATE TABLE rules_config (
     message TEXT             -- Optional failure message
 );
 
--- Sample Users
+CREATE TABLE training_data (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    salary NUMERIC NOT NULL,
+    credit_score INTEGER NOT NULL,
+    employment_years INTEGER NOT NULL,
+    loan_amount NUMERIC NOT NULL,
+    target INTEGER NOT NULL CHECK (target IN (0,1)),
+    source TEXT DEFAULT 'manual_override',
+    added_at TIMESTAMP DEFAULT NOW()
+);
+
+
+INSERT INTO training_data (salary, credit_score, employment_years, loan_amount, target, source) VALUES
+(60000, 720, 5, 200000, 1, 'INITIAL_LOAD'),
+(45000, 680, 2, 150000, 0, 'INITIAL_LOAD'),
+(85000, 750, 7, 250000, 1, 'INITIAL_LOAD'),
+(32000, 610, 1, 120000, 0, 'INITIAL_LOAD'),
+(70000, 730, 4, 180000, 1, 'INITIAL_LOAD'),
+(40000, 640, 1, 100000, 0, 'INITIAL_LOAD'),
+(55000, 700, 3, 160000, 1, 'INITIAL_LOAD');
+
+
 -- Password hash for 'password' using bcrypt
 INSERT INTO users (full_name, email, password_hash, role)
 VALUES 

@@ -1,8 +1,12 @@
 from db import get_connection
 from models import UserCreate, UserRead
 from logger import logger
+import os
+import httpx
+from fastapi import HTTPException
 
 role = "underwriter"
+ML_DECISION_SERVICE_URL = os.getenv("ML_DECISION_SERVICE_URL", "http://ml-decision-service:8000")  
 
 def get_users():
     logger.info("Fetching all underwriters")
@@ -84,3 +88,21 @@ def delete_borrower_application(user_id: str):
     except Exception as e:
         logger.exception(f"Error deleting borrower application for user ID: {user_id}: {e}")
         return {"error": "Error deleting borrower application"} 
+    
+def send_ml_model_train_request(underwriter_id: str):
+    headers = {
+        "x-user-id": underwriter_id
+    }
+
+    try:
+        with httpx.Client() as client:
+            response = client.post(f"{ML_DECISION_SERVICE_URL}/train-ml-model", headers=headers)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"Training failed: {response.text}"
+                )
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Internal call failed: {str(e)}")

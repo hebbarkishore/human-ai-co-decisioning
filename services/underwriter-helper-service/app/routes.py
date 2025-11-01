@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from models import ExplanationResponse,ManualDecisionUpdateRequest, UserCreate, UserRead
 from explanation_service import explain_borrower_application
 from override_decision_service import update_decision_by_underwriter
-from underwriter_service import get_users, get_user_by_id, create_user, delete_borrower_application
+from underwriter_service import get_users, get_user_by_id, create_user, delete_borrower_application, send_ml_model_train_request
 
 router = APIRouter(prefix="/underwriter-helper-service")
 
@@ -31,3 +31,7 @@ def add_user(user: UserCreate):
 @router.delete("/application/borrower/{user_id}")
 def delete_application(user_id: str):
     return delete_borrower_application(user_id)
+
+@router.post("/request-ml-training")
+def train_ml_model(x_underwriter_id: str = Header(...)):
+    return send_ml_model_train_request(x_underwriter_id)

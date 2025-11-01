@@ -9,16 +9,18 @@ import shap
 import numpy as np
 import pandas as pd
 
-model = joblib.load("ml_model.pkl")
-explainer = shap.TreeExplainer(model)
 
 def predict_from_parsed_data(parsed_data: dict):
+    model = joblib.load("ml_model.pkl")
+    explainer = shap.TreeExplainer(model)
+
     # Build DataFrame with proper feature names
     features = pd.DataFrame([[
-        clean_salary(parsed_data["annual_salary"]),
+        format_amount(parsed_data["annual_salary"]),
         parsed_data["credit_score"],
-        parsed_data["employment_years"]
-    ]], columns=["salary", "credit_score", "employment_years"])
+        parsed_data["employment_years"],
+        format_amount(parsed_data["loan_amount"])
+    ]], columns=["salary", "credit_score", "employment_years", "loan_amount"])
 
     # Predict probabilities
     prob = model.predict_proba(features)[0]
@@ -102,7 +104,7 @@ def evaluate_ml_decision(request: MLRequest) -> dict:
         cur.close()
         conn.close()
 
-def clean_salary(value: str):
+def format_amount(value: str):
     return float(value.replace("$", "").replace(",", "").strip())
 
 if __name__ == "__main__":

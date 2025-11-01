@@ -3,6 +3,7 @@ select * from rule_evaluation_log WHERE user_id = 'user_123';
 select * from fairness_audit_log WHERE ml_result_id = (select id FROM ml_prediction_results WHERE user_id = 'user_123');
 select * from ml_prediction_results WHERE user_id = 'user_123';
 select * from documents WHERE user_id = 'user_123';
+select * from training_data
 
 
 DELETE FROM decision_log;

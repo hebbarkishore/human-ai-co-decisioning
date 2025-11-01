@@ -59,6 +59,8 @@ services:
       - SERVICE_NAME=ml-decision-service
     depends_on:
       - postgres
+    volumes:
+      - ./services/ml-decision-service/app:/app
     ports:
       - "8004:8000"  
   

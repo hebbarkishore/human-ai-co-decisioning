@@ -41,3 +41,6 @@ build/
 
 # Miscellaneous
 .env # Environment variables
+
+services/ml-decision-service/app/__pycache__/
+services/ml-decision-service/app/venv/
