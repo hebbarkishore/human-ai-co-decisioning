@@ -1,0 +1,296 @@
+{
+	"info": {
+		"_postman_id": "63af1c69-47ce-4b07-a4d1-01b1da2f73c1",
+		"name": "human-ai-co-decisioning",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8324560"
+	},
+	"item": [
+		{
+			"name": "get-all-borrowers",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-SLA-Tier",
+						"value": "bronze",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8001/borrower-helper-service/borrowers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"borrower-helper-service",
+						"borrowers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-all-underwriters",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8006/underwriter-helper-service/underwriters",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8006",
+					"path": [
+						"underwriter-helper-service",
+						"underwriters"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-borrower",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"full_name\": \"ksh test\",\n    \"email\" : \"abc1@abc.com\",\n    \"password\" : \"sdce\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8001/borrower-helper-service/borrower",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"borrower-helper-service",
+						"borrower"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-underwriter",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"full_name\": \"Underwrite ABX\",\n    \"email\" : \"unrr@abc.com\",\n    \"password\" : \"TES\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8006/underwriter-helper-service/underwriter",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8006",
+					"path": [
+						"underwriter-helper-service",
+						"underwriter"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send-application",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/kishorehebbar/projects/human-ai-co-decisioning/sample_mortgage_loan.docx"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8001/borrower-helper-service/borrower/abc1@abc.com/check-eligibility",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"borrower-helper-service",
+						"borrower",
+						"abc1@abc.com",
+						"check-eligibility"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "explain-application-decision",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8006/underwriter-helper-service/application-explanation/borrower/f94d289d-ade8-4773-933d-d39402a8cfa4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8006",
+					"path": [
+						"underwriter-helper-service",
+						"application-explanation",
+						"borrower",
+						"f94d289d-ade8-4773-933d-d39402a8cfa4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update-decision",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-SLA-Tier",
+						"value": "bronze",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"underwriter_id\": \"26372038-4f30-4ec7-90fc-62bf5bd7cadb\",\n    \"borrower_id\": \"f94d289d-ade8-4773-933d-d39402a8cfa4\",\n    \"new_status\": \"rejected\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8006/underwriter-helper-service/manual-decision-update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8006",
+					"path": [
+						"underwriter-helper-service",
+						"manual-decision-update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "request-ml-training",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-underwriter-id",
+						"value": "26372038-4f30-4ec7-90fc-62bf5bd7cadb",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8006/underwriter-helper-service/request-ml-training",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8006",
+					"path": [
+						"underwriter-helper-service",
+						"request-ml-training"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete-user-applications",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8006/underwriter-helper-service/application/borrower/21abbede-6f7b-46e8-8cbb-863d867ae5dd",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8006",
+					"path": [
+						"underwriter-helper-service",
+						"application",
+						"borrower",
+						"21abbede-6f7b-46e8-8cbb-863d867ae5dd"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

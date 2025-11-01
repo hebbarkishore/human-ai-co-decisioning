@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Hebbar
+    given-names: Kishore Subramanya
+title: "Human-AI Co-Decisioning System for Mortgage Underwriting"
+version: "1.0.0"
+date-released: "2025-11-01"
+license: "MIT"
+repository-code: "https://github.com/hebbarkishore/human-ai-co-decisioning"
