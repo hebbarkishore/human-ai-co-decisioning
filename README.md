@@ -2,7 +2,7 @@
 
 A research PoC integrating ML, rule-based engines, fairness auditing, and human overrides in mortgage underwriting.
 
-## 🏦 Project Overview
+## Project Overview
 
 **Human-AI Co-Decisioning for Mortgage Underwriting** is a modular, microservices-based platform designed to streamline, explain, and improve loan approval decisions through a hybrid **AI + Human** approach.
 
@@ -28,6 +28,9 @@ This project solves both problems by:
 -  **Tracking fairness and bias metrics** in real time  
 -  **Retraining the ML model with human feedback** (via a shadow model loop)
 
+## System Design
+![System Design](docs/system_design.png)
+
 ## How to Run (Docker Compose)
 docker-compose up --build
 
@@ -41,7 +44,7 @@ docker-compose up --build
 | Fairness Auditor      | 8005     | [http://localhost:8005/docs](http://localhost:8005/docs) |
 | Underwriter Helper    | 8006     | [http://localhost:8006/docs](http://localhost:8006/docs) |
 
-## 🧪 API Testing with Postman
+## API Testing with Postman
 
 **Download Postman Collection:**  
 [HumanAI_Fintech_Collection.postman_collection.json](HumanAI_Fintech_Collection.postman_collection.json)
@@ -63,7 +66,7 @@ docker-compose up --build
 
 ---
 
-## 🤖 ML Model Management
+## ML Model Management
 
 - **Old trained models** are backed up to: `trained_model_history/`  
 - **New trained model** replaces: `ml_model.pkl`  
@@ -72,6 +75,11 @@ docker-compose up --build
 > Tip: Ensure the training data directory is mounted as a persistent volume if using Docker, so retrained models are not lost after container restarts.
 
 ---
+
+## Data Set
+The dataset used for testing and evaluation is included in the /dataset folder.
+It contains synthetic mortgage applicant records for rule evaluation, machine learning prediction and users data.
+Note: This dataset is fully synthetic and does not contain any real user information. It is intended solely for research and demonstration purposes.
 
 ## 📜 License
 

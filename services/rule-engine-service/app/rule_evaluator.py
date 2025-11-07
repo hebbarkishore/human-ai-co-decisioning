@@ -85,6 +85,13 @@ def evaluate_rules(request: RuleRequest) -> dict:
 
 def evaluate_condition(actual, operator, expected):
     try:
+        def clean_number(val):
+            if isinstance(val, str):
+                val = val.replace("$", "").replace(",", "").strip()
+            return val
+        
+        actual = clean_number(actual)
+        expected = clean_number(expected)
         if operator in [">", ">=", "<", "<="]:
             actual = float(actual)
             expected = float(expected)

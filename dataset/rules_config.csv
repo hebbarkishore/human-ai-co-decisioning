@@ -1,0 +1,11 @@
+name,field,operator,value,message
+Salary Check,salary,>=,50000,Salary too low
+Employer Check,employer,not in,"fraud inc, unknown corp",Blacklisted employer
+Credit Score Minimum,credit_score,>=,650,Credit score below minimum threshold
+Loan Amount Cap,loan_amount,<=,250000,Loan amount exceeds allowed cap
+Employment History,employment_years,>=,2,Insufficient employment history
+High Risk Employer,employer,in,"temp agency, gig economy",Requires additional verification
+Loan-to-Salary Ratio,loan_amount/salary,<=,4.5,Loan-to-salary ratio too high
+Geographic Risk,region,in,"zone-9, disaster-prone",Property located in high-risk zone
+Debt Flag,debt_flag,==,true,Existing significant debts detected
+Manual Review Override,manual_override,==,true,Flagged for manual review

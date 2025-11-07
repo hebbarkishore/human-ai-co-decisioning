@@ -1,0 +1,3 @@
+full_name,email,password_hash,role
+John Borrower,borrower1@example.com,$2b$12$Z6c3pHL5zdaqlStD25Zp8.G7dkOknuDwRrgQUiVUpjCn9hpoLtMOK,borrower
+Jane Underwriter,underwriter1@example.com,$2b$12$Z6c3pHL5zdaqlStD25Zp8.G7dkOknuDwRrgQUiVUpjCn9hpoLtMOK,underwriter

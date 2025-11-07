@@ -52,7 +52,7 @@ CREATE TABLE decision_log (
     ml_result_id UUID REFERENCES ml_prediction_results(id),
     rule_result_id UUID REFERENCES rule_evaluation_log(id),
     fairness_audit_log_id UUID REFERENCES fairness_audit_log(id),
-    final_decision TEXT CHECK (final_decision IN ('approved', 'rejected', 'pending', 'error', 'escalated')) NOT NULL,
+    final_decision TEXT CHECK (final_decision IN ('approved', 'rejected', 'pending_biased', 'pending_conflict', 'error', 'escalated')) NOT NULL,
     document_id UUID REFERENCES documents(id),
     explanation TEXT,
     created_at TIMESTAMP DEFAULT NOW()
@@ -88,22 +88,22 @@ CREATE TABLE training_data (
 );
 
 
-INSERT INTO training_data (salary, credit_score, employment_years, loan_amount, target, source) VALUES
-(60000, 720, 5, 200000, 1, 'INITIAL_LOAD'),
-(45000, 680, 2, 150000, 0, 'INITIAL_LOAD'),
-(85000, 750, 7, 250000, 1, 'INITIAL_LOAD'),
-(32000, 610, 1, 120000, 0, 'INITIAL_LOAD'),
-(70000, 730, 4, 180000, 1, 'INITIAL_LOAD'),
-(40000, 640, 1, 100000, 0, 'INITIAL_LOAD'),
-(55000, 700, 3, 160000, 1, 'INITIAL_LOAD');
+-- INSERT INTO training_data (salary, credit_score, employment_years, loan_amount, target, source) VALUES
+-- (60000, 720, 5, 200000, 1, 'INITIAL_LOAD'),
+-- (45000, 680, 2, 150000, 0, 'INITIAL_LOAD'),
+-- (85000, 750, 7, 250000, 1, 'INITIAL_LOAD'),
+-- (32000, 610, 1, 120000, 0, 'INITIAL_LOAD'),
+-- (70000, 730, 4, 180000, 1, 'INITIAL_LOAD'),
+-- (40000, 640, 1, 100000, 0, 'INITIAL_LOAD'),
+-- (55000, 700, 3, 160000, 1, 'INITIAL_LOAD');
 
 
--- Password hash for 'password' using bcrypt
-INSERT INTO users (full_name, email, password_hash, role)
-VALUES 
-  ('John Borrower', 'borrower1@example.com', '$2b$12$Z6c3pHL5zdaqlStD25Zp8.G7dkOknuDwRrgQUiVUpjCn9hpoLtMOK', 'borrower'),
-  ('Jane Underwriter', 'underwriter1@example.com', '$2b$12$Z6c3pHL5zdaqlStD25Zp8.G7dkOknuDwRrgQUiVUpjCn9hpoLtMOK', 'underwriter');
+-- -- Password hash for 'password' using bcrypt
+-- INSERT INTO users (full_name, email, password_hash, role)
+-- VALUES 
+--   ('John Borrower', 'borrower1@example.com', '$2b$12$Z6c3pHL5zdaqlStD25Zp8.G7dkOknuDwRrgQUiVUpjCn9hpoLtMOK', 'borrower'),
+--   ('Jane Underwriter', 'underwriter1@example.com', '$2b$12$Z6c3pHL5zdaqlStD25Zp8.G7dkOknuDwRrgQUiVUpjCn9hpoLtMOK', 'underwriter');
 
-INSERT INTO rules_config (name, field, operator, value, message) VALUES
-('Salary Check', 'salary', '>=', '50000', 'Salary too low'),
-('Employer Check', 'employer', 'not in', 'fraud inc, unknown corp', 'Blacklisted employer');
+-- INSERT INTO rules_config (name, field, operator, value, message) VALUES
+-- ('Salary Check', 'salary', '>=', '50000', 'Salary too low'),
+-- ('Employer Check', 'employer', 'not in', 'fraud inc, unknown corp', 'Blacklisted employer');

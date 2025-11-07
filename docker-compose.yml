@@ -12,7 +12,11 @@ services:
       ports:
         - "5432:5432"
       volumes:
-        - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+        - ./database/init.sql:/docker-entrypoint-initdb.d/01_init.sql
+        - ./dataset/training_data.csv:/docker-entrypoint-initdb.d/training_data.csv
+        - ./dataset/users.csv:/docker-entrypoint-initdb.d/users.csv
+        - ./dataset/rules_config.csv:/docker-entrypoint-initdb.d/rules_config.csv
+        - ./database/load_data.sql:/docker-entrypoint-initdb.d/02_load_data.sql
 
   borrowers-helper-service:
     build:
