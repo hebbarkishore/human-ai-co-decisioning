@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "Human-AI Co-Decisioning System for Mortgage Underwriting"
 version: "1.0.0"
-doi: "10.5281/zenodo.17503900"
+doi: "10.5281/zenodo.17576673"
 date-released: 2025-11-01
 authors:
   - family-names: Hebbar
