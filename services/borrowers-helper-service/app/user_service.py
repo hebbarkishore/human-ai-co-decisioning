@@ -20,22 +20,30 @@ role = "borrower"
 def get_users():
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, full_name, email, role FROM users WHERE role = %s", (role,))
+    cur.execute(
+    """
+    SELECT u.id, u.full_name, u.email, u.role, dl.final_decision AS status FROM users u 
+    LEFT JOIN (SELECT DISTINCT ON (borrower_id) borrower_id, final_decision FROM decision_log ORDER BY borrower_id, created_at DESC) dl ON u.id = dl.borrower_id WHERE u.role = %s
+    """, (role,))
     users = cur.fetchall()
     cur.close()
     conn.close()
-    return [UserRead(id=u[0], full_name=u[1], email=u[2], role=u[3]) for u in users]
+    return [UserRead(id=u[0], full_name=u[1], email=u[2], role=u[3], status=u[4]) for u in users]
 
 def get_user_by_id(user_id: str):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, full_name, email, role FROM users WHERE id = %s AND role = %s", (user_id, role))
+    cur.execute(
+    """
+    SELECT u.id, u.full_name, u.email, u.role, dl.final_decision AS status FROM users u 
+    LEFT JOIN (SELECT DISTINCT ON (borrower_id) borrower_id, final_decision FROM decision_log ORDER BY borrower_id, created_at DESC) dl ON u.id = dl.borrower_id WHERE id = %s and u.role = %s
+    """, (user_id, role,))
     u = cur.fetchone()
     cur.close()
     conn.close()
     if not u:
         raise Exception("User not found")
-    return UserRead(id=u[0], full_name=u[1], email=u[2], role=u[3])
+    return UserRead(id=u[0], full_name=u[1], email=u[2], role=u[3], status=u[4])
 
 def create_user(user: UserCreate):
     import bcrypt

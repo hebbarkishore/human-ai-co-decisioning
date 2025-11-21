@@ -92,7 +92,12 @@ services:
     ports:
       - "8006:8000"  
 
-  # shadow-model-trainer:
-  #   build: ./services/shadow-model-trainer
-  #   ports:
-  #     - "8007:8000"
+  mortgage-portal-ui:
+    build: ./mortgage-portal-ui
+    ports:
+      - "3000:80"  # host:container
+    volumes:
+      - ./mortgage-portal-ui:/app
+      - /app/node_modules  # avoid overwriting node_modules
+    stdin_open: true
+    tty: true

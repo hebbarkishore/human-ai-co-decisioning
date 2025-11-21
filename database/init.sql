@@ -87,6 +87,15 @@ CREATE TABLE training_data (
     added_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS explanation_letters (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    application_id VARCHAR(100),
+    decision_id VARCHAR(100),
+    letter_text TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
 
 -- INSERT INTO training_data (salary, credit_score, employment_years, loan_amount, target, source) VALUES
 -- (60000, 720, 5, 200000, 1, 'INITIAL_LOAD'),

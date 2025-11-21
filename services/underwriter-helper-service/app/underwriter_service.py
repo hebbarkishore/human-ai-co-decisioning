@@ -4,9 +4,11 @@ from logger import logger
 import os
 import httpx
 from fastapi import HTTPException
+from explanation_service import explain_borrower_application
 
 role = "underwriter"
 ML_DECISION_SERVICE_URL = os.getenv("ML_DECISION_SERVICE_URL", "http://ml-decision-service:8000")  
+EXPLANATION_LETTER_SERVICE_URL = os.getenv("EXPLANATION_LETTER_SERVICE_URL", "http://explanation-letter-service:8000")
 
 def get_users():
     logger.info("Fetching all underwriters")
@@ -103,6 +105,41 @@ def send_ml_model_train_request(underwriter_id: str):
                 raise HTTPException(
                     status_code=response.status_code,
                     detail=f"Training failed: {response.text}"
+                )
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Internal call failed: {str(e)}")
+    
+def generate_decision_exp_letter(borrower_id: str, underwriter_id: str):
+    logger.info(f"Generating decision explanation letter for borrower ID: {borrower_id} by underwriter ID: {underwriter_id}")
+    # Validate borrower role
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT role FROM users WHERE id = %s", (underwriter_id,))
+        user = cur.fetchone()
+        if not user or user[0] != "underwriter":
+            raise HTTPException(status_code=403, detail="This user is not allowed to generate explanation letters")
+    except HTTPException as he:
+        raise he
+    finally:
+        cur.close()
+        conn.close()
+    explanation = explain_borrower_application(borrower_id)
+    payload = explanation.model_dump()
+    logger.info(f"Explanation fetched for borrower ID {borrower_id}: {payload}")
+
+    try:
+        with httpx.Client(timeout=30.0) as client:
+            response = client.post(
+                f"{EXPLANATION_LETTER_SERVICE_URL}/generate_letter",
+                json=payload
+            )
+            if response.status_code == 200:
+                return response.json()
+            else:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"Generate Letter failed: {response.text}"
                 )
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Internal call failed: {str(e)}")

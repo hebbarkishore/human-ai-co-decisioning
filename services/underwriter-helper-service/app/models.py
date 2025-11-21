@@ -1,6 +1,9 @@
 from pydantic import BaseModel, EmailStr
 from typing import Dict, Optional
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 class ExplanationDetails(BaseModel):
     rule_explanation: str

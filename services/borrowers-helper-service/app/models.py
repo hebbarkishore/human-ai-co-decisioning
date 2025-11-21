@@ -11,3 +11,4 @@ class UserRead(BaseModel):
     full_name: str
     email: EmailStr
     role: str
+    status: Optional[str] = None
