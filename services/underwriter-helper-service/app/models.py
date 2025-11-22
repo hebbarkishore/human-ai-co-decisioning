@@ -5,9 +5,14 @@ class LoginRequest(BaseModel):
     email: str
     password: str
 
+class ExplanationWithCases(BaseModel):
+    passed_cases: Optional[str] = None
+    failed_cases: Optional[str] = None
+    result: Optional[str] = None
+
 class ExplanationDetails(BaseModel):
-    rule_explanation: str
-    ml_explanation: str
+    rule_explanation: ExplanationWithCases
+    ml_explanation: ExplanationWithCases
     fairness_explanation: str
 
 class ExplanationResponse(BaseModel):

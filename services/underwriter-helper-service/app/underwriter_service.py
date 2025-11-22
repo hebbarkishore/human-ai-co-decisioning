@@ -4,7 +4,6 @@ from logger import logger
 import os
 import httpx
 from fastapi import HTTPException
-from explanation_service import explain_borrower_application
 
 role = "underwriter"
 ML_DECISION_SERVICE_URL = os.getenv("ML_DECISION_SERVICE_URL", "http://ml-decision-service:8000")  

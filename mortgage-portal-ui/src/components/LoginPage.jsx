@@ -16,11 +16,11 @@ function LoginPage({ onLogin }) {
         password: pwd
       });
       if (response.status === 200) {
-        console.log("✅ Login successful:", response.data);
+        console.log("Login successful:", response.data);
         onLogin(response.data); // Trigger post-login flow
       }
     } catch (error) {
-      console.error("❌ Login failed:", error.response?.data || error.message);
+      console.error("Login failed:", error.response?.data || error.message);
       setError("Invalid credentials or server error");
     }
   };

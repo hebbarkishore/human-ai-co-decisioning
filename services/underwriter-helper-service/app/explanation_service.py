@@ -2,7 +2,7 @@ from db import get_connection
 from logger import logger
 import json
 from fastapi import HTTPException
-from models import ExplanationResponse, ExplanationDetails, ManualDecisionUpdateRequest
+from models import ExplanationResponse, ExplanationDetails, ExplanationWithCases, ManualDecisionUpdateRequest
 
 def explain_borrower_application(user_id: str):
     logger.info(f"Generating explanation for borrower {user_id}")
@@ -60,41 +60,33 @@ def explain_borrower_application(user_id: str):
         # Prepare explanations
         status = final_decision.lower()
 
-        if status == "approved":
-            rule_passed = [k for k, v in rule_values.items() if v.lower() == "passed"]
-            ml_positive = [k for k, v in shap_summary.items() if v > 0]
+        rule_factors_passed = [k for k, v in rule_values.items() if v.lower().startswith("passed")]
+        ml_factors_passed = [k for k, v in shap_summary.items() if v > 0]
+        rule_factors_failed = [k for k, v in rule_values.items() if not v.lower().startswith("passed")]
+        ml_factors_failed = [k for k, v in shap_summary.items() if v < 0]
 
-            rule_explanation = f"Rule passed based on the following factors: {', '.join(rule_passed)}"
-            ml_explanation = f"ML model predicted approval with confidence score of {confidence_score}. " \
-                             f"Key positive contributors were: {', '.join(ml_positive)}"
 
-        elif status == "rejected":
-            # Decide rule explanation based on actual rule_status
-            if rule_status == "fail":
-                rule_factors = [k for k, v in rule_values.items() if not v.lower().startswith("passed")]
-                rule_explanation = f"Rule failed based on the following factors: {', '.join(rule_factors)}"
-            else:
-                rule_factors = [k for k, v in rule_values.items() if v.lower().startswith("passed")]
-                rule_explanation = f"Rule passed based on the following factors: {', '.join(rule_factors)}"
+        rule_positive_explanation = f"{', '.join(rule_factors_passed)}"
+        ml_positive_explanation = f"ML model predicted confidence score of {confidence_score}. " \
+                             f"Best positive contributors were: {', '.join(ml_factors_passed)}"
+        
+        rule_failed_explanation = f"{', '.join(rule_factors_failed)}"
+        ml_failed_explanation = f"Key failed contributors were: {', '.join(ml_factors_failed)}"
 
-            # Decide ML explanation based on predicted_decision
-            if predicted_decision == "rejected":
-                ml_factors = [k for k, v in shap_summary.items() if v < 0]
-                ml_explanation = f"ML model predicted rejection with confidence score of {confidence_score}. " \
-                                f"Key negative contributors were: {', '.join(ml_factors)}"
-            else:
-                ml_factors = [k for k, v in shap_summary.items() if v > 0]
-                ml_explanation = f"ML model predicted approval with confidence score of {confidence_score}. " \
-                                f"Key positive contributors were: {', '.join(ml_factors)}"
-
-        else:  # Pending or unknown decision
-            rule_keys = [k for k, v in rule_values.items()]
-            ml_keys = shap_summary.keys()
-            rule_explanation = f"Rule evaluated and the result {rule_status}, based on the following factors: {', '.join(rule_keys)}"
-            ml_explanation = f"ML model predicted {predicted_decision} with confidence score of {confidence_score}. " \
-                             f"Key contributors were: {', '.join(ml_keys)}"
 
         fairness_explanation = f"Fairness bias {bias_detected} and audit result: {audit_summary}"
+
+        rule_explanation = ExplanationWithCases(
+            passed_cases=rule_positive_explanation,
+            failed_cases=rule_failed_explanation,
+            result=rule_status
+        )
+
+        ml_explanation = ExplanationWithCases(
+            passed_cases=ml_positive_explanation,
+            failed_cases=ml_failed_explanation,
+            result=predicted_decision
+        )
 
         explanation = ExplanationResponse(
             status=status,
