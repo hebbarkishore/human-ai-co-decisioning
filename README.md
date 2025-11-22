@@ -81,6 +81,10 @@ The dataset used for testing and evaluation is included in the /dataset folder.
 It contains synthetic mortgage applicant records for rule evaluation, machine learning prediction and users data.
 Note: This dataset is fully synthetic and does not contain any real user information. It is intended solely for research and demonstration purposes.
 
+### UI Access
+Run the UI on [http://localhost:3000](http://localhost:3000).  
+Login as either a **borrower** or **underwriter** to explore respective dashboards and actions.
+
 ## 📜 License
 
 This project is intended for **research and educational purposes only**.  
