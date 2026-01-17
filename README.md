@@ -31,6 +31,11 @@ This project solves both problems by:
 ## System Design
 ![System Design](docs/system_design.png)
 
+## Synthetic data set generator.
+Full experimental datasets (10,000+ samples) are generated programmatically using generate_synthetic.py
+pip install pandas numpy pyyaml (or python3 -m pip install pandas numpy pyyaml)
+python generate_synthetic.py (or python3 generate_synthetic.py)
+
 ## How to Run (Docker Compose)
 docker-compose up --build
 

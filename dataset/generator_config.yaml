@@ -1,0 +1,32 @@
+num_samples: 10000
+random_seed: 42
+
+salary:
+  distribution: lognormal
+  mean: 11.0      
+  sigma: 0.5
+  min: 30000
+  max: 200000
+
+credit_score:
+  distribution: normal
+  mean: 700
+  std: 50
+  min: 550
+  max: 850
+
+employment_years:
+  distribution: uniform
+  min: 0
+  max: 30
+
+loan_amount:
+  distribution: lognormal
+  mean: 12.0      
+  sigma: 0.6
+  min: 50000
+  max: 600000
+
+approval_rule:
+  credit_score_threshold: 680
+  dti_proxy_threshold: 4.0
